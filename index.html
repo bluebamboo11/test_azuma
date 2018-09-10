@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
+<script>
+    // Initialize Firebase
+    const config = {
+        apiKey: "AIzaSyA0yd7x0JGVECXhiLmdJuhfSoCTPSoInYo",
+        authDomain: "testting-a51a8.firebaseapp.com",
+        databaseURL: "https://testting-a51a8.firebaseio.com",
+        projectId: "testting-a51a8",
+        storageBucket: "testting-a51a8.appspot.com",
+        messagingSenderId: "944769943074"
+    };
+    firebase.initializeApp(config);
+    const db = firebase.firestore();
+    const rfNotification = firebase.firestore().collection('notification');
+    let user = {
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    rfNotification.doc('oloBjILEBnXuZnkwjhF0Kww5GTm2').collection('add-friends').doc('ckVuP0KXOyZo7DLA1BRpPUmRXe33').set(user)
+</script>
+</body>
+</html>
