@@ -39,6 +39,7 @@ app.controller('myCtrl', function ($scope) {
     };
 
     function getAllUser() {
+        $scope.lstUser = [];
         firestore.collection("amuza/vn/connect")
             .onSnapshot(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
@@ -49,7 +50,7 @@ app.controller('myCtrl', function ($scope) {
     }
 
     $scope.inviteFriend = function () {
-        rfNotification.doc($scope.invite.userInvite).collection('add-friends').doc($scope.invite.userSend).set({ timestamp: firebase.firestore.FieldValue.serverTimestamp()})
+        rfNotification.doc($scope.invite.userInvite).collection('add-friends').doc($scope.invite.userSend).set({timestamp: firebase.firestore.FieldValue.serverTimestamp()})
     };
 
     $scope.deleteNotification = function () {
@@ -77,11 +78,18 @@ app.controller('myCtrl', function ($scope) {
         if ($scope.uid) {
             firestore.collection("amuza/vn/user").doc($scope.uid).set(user);
             firestore.collection("amuza/vn/connect").doc($scope.uid).set({
-                ...user,timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                ...user, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         } else {
             alert('uid null')
         }
+    };
+    $scope.addFriend = function () {
+        let newUid = parseInt(moment(new Date()).valueOf()).toString(36);
+        firestore.collection('amuza/vn/message').add({isNew:true}).then((docRef)=>{
+            rfNotification.doc($scope.invite.userInvite).collection('invite-friends').doc($scope.invite.userSend).set({idMessage:docRef.id,uid:newUid})
+        });
+
     }
 });
 
