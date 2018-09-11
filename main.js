@@ -39,9 +39,9 @@ app.controller('myCtrl', function ($scope) {
     };
 
     function getAllUser() {
-        $scope.lstUser = [];
         firestore.collection("amuza/vn/connect")
             .onSnapshot(function (querySnapshot) {
+                $scope.lstUser = [];
                 querySnapshot.forEach(function (doc) {
                     $scope.lstUser.push({name: doc.data().name, id: doc.id});
                     $scope.$digest()
@@ -58,6 +58,7 @@ app.controller('myCtrl', function ($scope) {
             $scope.lstUser.forEach((value2) => {
                 if (value.id !== value2.id) {
                     rfNotification.doc(value.id).collection('add-friends').doc(value2.id).delete();
+                    rfNotification.doc(value.id).collection('invite-friends').doc(value2.id).delete();
                 }
             })
         })
@@ -65,10 +66,8 @@ app.controller('myCtrl', function ($scope) {
     $scope.clearUser = function () {
         $scope.lstUser.forEach((value) => {
             $scope.lstUser.forEach((value2) => {
-                if (value.id !== value2.id) {
                     firestore.collection("amuza/vn/user").doc(value.id).collection('friends').doc(value2.id).delete();
                     firestore.collection("amuza/vn/user").doc(value.id).collection('black-list').doc(value2.id).delete();
-                }
             })
         })
     };
