@@ -3,28 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css"/>
 </head>
-<body>
+<body style="background-color: #ECEFF1" ng-app="myApp" ng-controller="myCtrl">
+<div class="container" style="background-color: white;padding-bottom: 15px">
+    <img style="margin-left: calc(50% - 100px)" src="coollogo_com-247131191.gif"/>
+    <h5 style="text-transform: uppercase">Tạo mới user</h5>
+    <div style="width: 100%;height: 2px; background-color: #5a6268 ;margin-bottom: 13px"></div>
+    <form>
+        <div class="form-group">
+            <label >Name</label>
+            <input class="form-control" ng-model="user.name" >
+        </div>
+        <div class="form-group">
+            <label for="Avatar">Avatar</label>
+            <input class="form-control" id="Avatar"  ng-model="user.avatar" >
+        </div>
+        <div class="form-group">
+            <label for="address">address</label>
+            <input class="form-control" id="address" ng-model="user.address" >
+        </div>
+        <div class="form-group">
+            <label >Birth day</label>
+            <input type="date" class="form-control" name="bday" max="2000-9-11" min="1900-1-1" ng-model="user.birthDay" >
+        </div>
+        <div class="form-group">
+            <label for="Job">Job</label>
+            <input class="form-control" id="Job" ng-model="user.job" >
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="Men"ng-model="user.isMen" >
+            <label class="form-check-label" for="Men">Men ?</label>
+        </div>
+        <div class="row" style="margin-left: 0;margin-right: 0">
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-danger col " ng-click="login()">Login</button>
+            </div>
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-secondary col" ng-click="logOut()">logout</button>
+            </div>
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-primary col" ng-click="initUser()">Submit</button>
+            </div>
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-warning col" ng-click="clearUser()">Clear</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container" style="padding-top: 15px;background-color: white;padding-bottom: 30px;margin-top: 15px">
+    <h5 style="text-transform: uppercase">Gửi lời mời kết bạn</h5>
+    <div style="width: 100%;height: 2px; background-color: #5a6268 ;margin-bottom: 13px"></div>
+    <form id="invite-friend">
+        <div class="form-group">
+            <label>Tài khoản nhận</label>
+            <select class="custom-select select-user" name="userInvite" ng-model="invite.userInvite" ng-cloak>
+                <option ng-repeat="user in lstUser" ng-value="user.id" ng-cloak>{{user.name}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Tài khoản gửi</label>
+            <select class="custom-select select-user" name="userSend" ng-model="invite.userSend" ng-cloak>
+                <option ng-repeat="user in lstUser" ng-value="user.id" ng-cloak> {{user.name}}</option>
+            </select>
+        </div>
+        <div class="row" style="margin-left: 0;margin-right: 0">
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-primary col" ng-click="inviteFriend()">send</button>
+            </div>
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-danger col" ng-click="deleteNotification()">Xóa thông báo
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="js/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
-<script>
-    // Initialize Firebase
-    const config = {
-        apiKey: "AIzaSyA0yd7x0JGVECXhiLmdJuhfSoCTPSoInYo",
-        authDomain: "testting-a51a8.firebaseapp.com",
-        databaseURL: "https://testting-a51a8.firebaseio.com",
-        projectId: "testting-a51a8",
-        storageBucket: "testting-a51a8.appspot.com",
-        messagingSenderId: "944769943074"
-    };
-    firebase.initializeApp(config);
-    const db = firebase.firestore();
-    const rfNotification = firebase.firestore().collection('notification');
-    let user = {
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    rfNotification.doc('oloBjILEBnXuZnkwjhF0Kww5GTm2').collection('add-friends').doc('ckVuP0KXOyZo7DLA1BRpPUmRXe33').set(user)
-</script>
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
+<script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
