@@ -124,12 +124,36 @@
         </div>
     </form>
 </div>
+<div class="container" style="padding-top: 15px;background-color: white;padding-bottom: 30px;margin-top: 15px">
+    <h5 style="text-transform: uppercase">Online</h5>
+    <div style="width: 100%;height: 2px; background-color: #5a6268 ;margin-bottom: 13px"></div>
+    <form >
+        <div class="form-group">
+            <label>Tài khoản </label>
+            <label>
+                <select class="custom-select select-user"  ng-model="userOnline" ng-cloak>
+                    <option ng-repeat="user in lstUser" ng-value="user.id" ng-cloak>{{user.name}}</option>
+                </select>
+            </label>
+        </div>
+        <div class="row" style="margin-left: 0;margin-right: 0">
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-primary col" ng-click="online()">Online</button>
+            </div>
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-secondary col" ng-click="offline()">Offline</button>
+            </div>
+
+        </div>
+    </form>
+</div>
 <script src="js/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
 <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
