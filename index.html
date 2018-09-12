@@ -77,9 +77,50 @@
                 </button>
             </div>
             <div style="padding-left: 5px;padding-right: 5px" class="col-3">
-                <button type="button" class="btn btn-danger col" ng-click="deleteNotification()">Xóa thông báo
+                <button type="button" class="btn btn-danger col" ng-click="deleteNotification()">Xóa
                 </button>
             </div>
+        </div>
+    </form>
+</div>
+<div class="container" style="padding-top: 15px;background-color: white;padding-bottom: 30px;margin-top: 15px">
+    <h5 style="text-transform: uppercase">Gửi tin nhắn</h5>
+    <div style="width: 100%;height: 2px; background-color: #5a6268 ;margin-bottom: 13px"></div>
+    <form >
+        <div class="form-group">
+            <label>Tài khoản nhận</label>
+            <select class="custom-select select-user" name="userInvite" ng-model="message.inbox" ng-cloak>
+                <option ng-repeat="user in lstUser" ng-value="user.id" ng-cloak>{{user.name}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Tài khoản gửi</label>
+            <select class="custom-select select-user" name="userSend" ng-model="message.send" ng-cloak>
+                <option ng-repeat="user in lstUser" ng-value="user.id" ng-cloak> {{user.name}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>type</label>
+            <select class="custom-select select-user" name="userSend" ng-model="message.type" ng-cloak>
+                <option ng-repeat="type in lstType" ng-value="type.key" ng-cloak> {{type.name}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label >tin nhắn</label>
+            <input class="form-control" ng-model="message.content">
+        </div>
+        <div class="row" style="margin-left: 0;margin-right: 0">
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-primary col" ng-click="sendMessage()">send</button>
+            </div>
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-secondary col" ng-click="addTwoFriend()">Thêm bạn 2
+                </button>
+            </div>
+            <div style="padding-left: 5px;padding-right: 5px" class="col-3">
+                <button type="button" class="btn btn-danger col" ng-click="deleteMesage()">Xóa</button>
+            </div>
+
         </div>
     </form>
 </div>

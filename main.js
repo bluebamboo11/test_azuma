@@ -24,6 +24,11 @@ app.controller('myCtrl', function ($scope) {
     $scope.invite = {userSend: null, userInvite: null};
     $scope.uid = '';
     $scope.user = {};
+    $scope.message = {};
+    $scope.lstType = [{key: 'ANIMATION', name: 'animation'}, {key: 'IMG', name: 'image'}, {
+        key: 'TEXT',
+        name: 'text'
+    }, {key: 'SHIELD', name: 'shield'}];
     getAllUser();
     $scope.login = function () {
         firebase.auth().signInWithPopup(provider).then(function (result) {
@@ -40,7 +45,7 @@ app.controller('myCtrl', function ($scope) {
 
     function getAllUser() {
         $scope.lstUser = [];
-        firestore.collection("amuza/vn/connect")
+        firestore.collection("amuza/vn/user")
             .onSnapshot(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
                     $scope.lstUser.push({name: doc.data().name, id: doc.id});
@@ -86,10 +91,53 @@ app.controller('myCtrl', function ($scope) {
     };
     $scope.addFriend = function () {
         let newUid = parseInt(moment(new Date()).valueOf()).toString(36);
-        firestore.collection('amuza/vn/message').add({isNew:true}).then((docRef)=>{
-            rfNotification.doc($scope.invite.userInvite).collection('invite-friends').doc($scope.invite.userSend).set({idMessage:docRef.id,uid:newUid})
+        firestore.collection('amuza/vn/message').add({isNew: true}).then((docRef) => {
+            rfNotification.doc($scope.invite.userInvite).collection('invite-friends').doc($scope.invite.userSend).set({
+                idMessage: docRef.id,
+                uid: newUid
+            }).then(()=>{
+                alert('Xong')
+            })
         });
 
+    };
+    $scope.sendMessage = function () {
+        if ($scope.message.inbox && $scope.message.send) {
+            firestore.collection('amuza/vn/user')
+                .doc($scope.message.send)
+                .collection('friends')
+                .doc($scope.message.inbox).get().then((doc) => {
+                if (doc.exists) {
+                    let friend = doc.data();
+                    let message = {type: $scope.message.type, uid: friend.myid, content: $scope.message.content};
+                    firestore.collection('amuza/vn/message')
+                        .doc(friend.idMessage).collection('message').add(message).then(() => {
+                        alert('đã gửi')
+                    })
+                } else {
+                    alert('Chưa được kết bạn')
+                }
+            })
+        }else {
+            alert('nhập đầy đủ')
+        }
+    };
+
+    $scope.addTwoFriend = function () {
+       let idInbox =creatId(0);
+       let idSend =creatId(1000);
+        firestore.collection('amuza/vn/message').add({id1: $scope.message.inbox,id2:$scope.message.send}).then((docRef) => {
+            firestore.collection('amuza/vn/user')
+                .doc($scope.message.inbox)
+                .collection('friends')
+                .doc($scope.message.send).set({idFriend:idSend,myid:idInbox,idMessage:docRef.id});
+            firestore.collection('amuza/vn/user')
+                .doc($scope.message.send)
+                .collection('friends')
+                .doc($scope.message.inbox).set({idFriend:idInbox,myid:idSend,idMessage:docRef.id})
+        });
     }
 });
-
+function creatId(i) {
+    return parseInt(moment(new Date()).valueOf()+i).toString(36);
+}
