@@ -26,6 +26,7 @@ app.controller('myCtrl', function ($scope) {
     $scope.uid = '';
     $scope.user = {};
     $scope.message = {};
+    $scope.styleUser ='';
     $scope.amountUser = 0;
     $scope.lstType = [{key: 'ANIMATION', name: 'animation'}, {key: 'IMG', name: 'image'}, {
         key: 'TEXT',
@@ -142,6 +143,12 @@ app.controller('myCtrl', function ($scope) {
                 .doc($scope.message.inbox).set({idFriend: idInbox, myid: idSend, idMessage: docRef.id})
         });
     };
+    $scope.online = function () {
+        database.ref("amuza/"+$scope.userOnline).set({online:true})
+    };
+    $scope.offline = function () {
+        database.ref("amuza/"+$scope.userOnline).set({online:false})
+    };
     $scope.autoCreateUser = function (isFirt) {
         if (isFirt) {
             $scope.index = 0;
@@ -157,7 +164,7 @@ app.controller('myCtrl', function ($scope) {
                             avatar: !$scope.index % 2 === 0 ? 'https://znews-photo-td.zadn.vn/w1024/Uploaded/kcwvouvs/2017_09_15/20106368_863767830449352_6829951550605727269_n.jpg' :
                                 'https://d3ljug581seh18.cloudfront.net/assets/boys_home/boy_B-95ebb6cde3379af8ef602fbdd78bd4bb.jpg',
                             isMen: $scope.index % 2 === 0,
-                            isTess
+                            isTess:true
                         };
                     let p1 = firestore.collection('amuza/vn/user').doc('test_user_' + $scope.index).set({
                         ...user,
@@ -209,6 +216,7 @@ function getOld(old) {
     return arrOld
 }
 
+
 function creatId(i) {
-    return parseInt(moment(new Date()).valueOf() + i).toString(36);
+    return parseInt(moment(new Date()).valueOf()+i).toString(36);
 }
