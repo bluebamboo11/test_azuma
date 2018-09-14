@@ -26,7 +26,7 @@ app.controller('myCtrl', function ($scope) {
     $scope.uid = '';
     $scope.user = {};
     $scope.message = {};
-    $scope.styleUser ='';
+    $scope.amountUser = 0;
     $scope.lstType = [{key: 'ANIMATION', name: 'animation'}, {key: 'IMG', name: 'image'}, {
         key: 'TEXT',
         name: 'text'
@@ -126,26 +126,89 @@ app.controller('myCtrl', function ($scope) {
     };
 
     $scope.addTwoFriend = function () {
-        let idInbox =creatId(0);
-        let idSend =creatId(1000);
-        firestore.collection('amuza/vn/message').add({id1: $scope.message.inbox,id2:$scope.message.send}).then((docRef) => {
+        let idInbox = creatId(0);
+        let idSend = creatId(1000);
+        firestore.collection('amuza/vn/message').add({
+            id1: $scope.message.inbox,
+            id2: $scope.message.send
+        }).then((docRef) => {
             firestore.collection('amuza/vn/user')
                 .doc($scope.message.inbox)
                 .collection('friends')
-                .doc($scope.message.send).set({idFriend:idSend,myid:idInbox,idMessage:docRef.id});
+                .doc($scope.message.send).set({idFriend: idSend, myid: idInbox, idMessage: docRef.id});
             firestore.collection('amuza/vn/user')
                 .doc($scope.message.send)
                 .collection('friends')
-                .doc($scope.message.inbox).set({idFriend:idInbox,myid:idSend,idMessage:docRef.id})
+                .doc($scope.message.inbox).set({idFriend: idInbox, myid: idSend, idMessage: docRef.id})
         });
     };
-    $scope.online = function () {
-        database.ref("amuza/"+$scope.userOnline).set({online:true})
+    $scope.autoCreateUser = function (isFirt) {
+        if (isFirt) {
+            $scope.index = 0;
+        }
+        if ($scope.index < $scope.amountUser) {
+            let promiseAll = [];
+            for (let i = 0; i <= 10; i++) {
+                if ($scope.index < $scope.amountUser) {
+                    let user =
+                        {
+                            name: 'test_name_' + $scope.index,
+                            address: 'address_' + $scope.index,
+                            avatar: !$scope.index % 2 === 0 ? 'https://znews-photo-td.zadn.vn/w1024/Uploaded/kcwvouvs/2017_09_15/20106368_863767830449352_6829951550605727269_n.jpg' :
+                                'https://d3ljug581seh18.cloudfront.net/assets/boys_home/boy_B-95ebb6cde3379af8ef602fbdd78bd4bb.jpg',
+                            isMen: $scope.index % 2 === 0,
+                            isTess
+                        };
+                    let p1 = firestore.collection('amuza/vn/user').doc('test_user_' + $scope.index).set({
+                        ...user,
+                        birthDay: '23 - 2 - 1999'
+                    });
+                    let old = Math.floor(Math.random() * 37) + 18;
+                    let p2 = firestore.collection('amuza/vn/connect').doc('test_user_' + $scope.index).set({
+                        ...user,
+                        old: getOld(old)
+                    });
+                    promiseAll.push(p1);
+                    promiseAll.push(p2);
+                    $scope.index = $scope.index + 1;
+                }
+            }
+            Promise.all(promiseAll).then(values => {
+                $scope.autoCreateUser()
+            });
+
+        } else {
+            alert('Hoàn thành')
+        }
     };
-    $scope.offline = function () {
-        database.ref("amuza/"+$scope.userOnline).set({online:false})
+    $scope.removeUserTest = function (isFirt) {
+        if (isFirt) {
+            $scope.index = 0;
+        }
+        if ($scope.index < $scope.amountUser) {
+            let p1 = firestore.collection('amuza/vn/user').doc('test_user_' + $scope.index).delete();
+            let p2 = firestore.collection('amuza/vn/connect').doc('test_user_' + $scope.index).delete();
+            Promise.all([p1, p2]).then(values => {
+                $scope.removeUserTest()
+            });
+            $scope.index = $scope.index + 1;
+        }
+        else {
+            alert('Hoàn thành')
+        }
     }
 });
+
+function getOld(old) {
+    let arrOld = [];
+    for (let i = 18; i <= old; i++) {
+        for (let j = old; j <= 55; j++) {
+            arrOld.push(`${i}-${j}`)
+        }
+    }
+    return arrOld
+}
+
 function creatId(i) {
-    return parseInt(moment(new Date()).valueOf()+i).toString(36);
+    return parseInt(moment(new Date()).valueOf() + i).toString(36);
 }
