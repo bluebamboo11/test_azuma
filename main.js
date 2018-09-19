@@ -19,6 +19,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 firebase.auth().languageCode = 'vi';
 provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 let database = firebase.database();
+let storage = firebase.storage();
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function ($scope) {
     $scope.lstUser = [];
@@ -202,6 +203,16 @@ app.controller('myCtrl', function ($scope) {
         }
         else {
             alert('Hoàn thành')
+        }
+    };
+    $scope.mapGifFile = function () {
+        for(let i =1;i<28;i++){
+            storage.ref('images/animation_gif/gif/img_'+i+'.gif').getDownloadURL().then(function(urlGif) {
+                storage.ref('images/animation_gif/png/img_'+i+'.png').getDownloadURL().then(function(urlPng) {
+                    console.log({gif:urlGif,png:urlPng});
+                    firestore.collection('gif_message').add({gif:urlGif,png:urlPng});
+                });
+            });
         }
     }
 });
