@@ -205,8 +205,8 @@ app.controller('myCtrl', function ($scope) {
             alert('Hoàn thành')
         }
     };
-    $scope.mapGifFile = function () {
-        for(let i =1;i<28;i++){
+    $scope.mapGifFile = function (amount) {
+        for(let i =1;i<=amount;i++){
             storage.ref('images/animation_gif/gif/img_'+i+'.gif').getDownloadURL().then(function(urlGif) {
                 storage.ref('images/animation_gif/png/img_'+i+'.png').getDownloadURL().then(function(urlPng) {
                     console.log({gif:urlGif,png:urlPng});
