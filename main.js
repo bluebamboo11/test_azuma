@@ -27,7 +27,7 @@ app.controller('myCtrl', function ($scope) {
     $scope.uid = '';
     $scope.user = {};
     $scope.message = {};
-    $scope.styleUser ='';
+    $scope.styleUser = '';
     $scope.amountUser = 0;
     $scope.lstType = [{key: 'ANIMATION', name: 'animation'}, {key: 'IMG', name: 'image'}, {
         key: 'TEXT',
@@ -99,10 +99,26 @@ app.controller('myCtrl', function ($scope) {
             rfNotification.doc($scope.invite.userInvite).collection('invite-friends').doc($scope.invite.userSend).set({
                 idMessage: docRef.id,
                 uid: newUid
-            }).then(()=>{
+            }).then(() => {
                 alert('Xong')
             })
         });
+
+    };
+    $scope.creatFriend = function(){
+        rfNotification.doc($scope.invite.userInvite).collection('invite-friends').doc($scope.invite.userSend).get().then((doc) => {
+
+                //lưu lại thông tin bạn
+                let newUid = parseInt(moment(new Date()).valueOf()).toString(36);
+                firestore.collection("amuza/vn/user").doc($scope.invite.userInvite).collection('friends').doc(doc.id).set({
+                    id: doc.id,
+                    idMessage: doc.data().idMessage,
+                    myId: newUid,
+                    isNew: true
+                });
+                // xoa thông báo đông ý kết bạn
+                rfNotification.doc($scope.invite.userInvite).collection('invite-friends').doc($scope.invite.userSend).delete();
+            });
 
     };
     $scope.sendMessage = function () {
@@ -113,7 +129,13 @@ app.controller('myCtrl', function ($scope) {
                 .doc($scope.message.inbox).get().then((doc) => {
                 if (doc.exists) {
                     let friend = doc.data();
-                    let message = {type: $scope.message.type, uid: friend.myid, content: $scope.message.content};
+                    let message = {
+                        type: $scope.message.type,
+                        uid: friend.myId,
+                        content: $scope.message.content,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        id:creatId(10),
+                    };
                     firestore.collection('amuza/vn/message')
                         .doc(friend.idMessage).collection('message').add(message).then(() => {
                         alert('đã gửi')
@@ -122,7 +144,7 @@ app.controller('myCtrl', function ($scope) {
                     alert('Chưa được kết bạn')
                 }
             })
-        }else {
+        } else {
             alert('nhập đầy đủ')
         }
     };
@@ -137,18 +159,18 @@ app.controller('myCtrl', function ($scope) {
             firestore.collection('amuza/vn/user')
                 .doc($scope.message.inbox)
                 .collection('friends')
-                .doc($scope.message.send).set({idFriend: idSend, myid: idInbox, idMessage: docRef.id});
+                .doc($scope.message.send).set({idFriend: idSend, myId: idInbox, idMessage: docRef.id});
             firestore.collection('amuza/vn/user')
                 .doc($scope.message.send)
                 .collection('friends')
-                .doc($scope.message.inbox).set({idFriend: idInbox, myid: idSend, idMessage: docRef.id})
+                .doc($scope.message.inbox).set({idFriend: idInbox, myId: idSend, idMessage: docRef.id})
         });
     };
     $scope.online = function () {
-        database.ref("amuza/"+$scope.userOnline).set({online:true})
+        database.ref("amuza/" + $scope.userOnline).set({online: true})
     };
     $scope.offline = function () {
-        database.ref("amuza/"+$scope.userOnline).set({online:false})
+        database.ref("amuza/" + $scope.userOnline).set({online: false})
     };
     $scope.autoCreateUser = function (isFirt) {
         if (isFirt) {
@@ -162,10 +184,10 @@ app.controller('myCtrl', function ($scope) {
                         {
                             name: 'test_name_' + $scope.index,
                             address: 'address_' + $scope.index,
-                            avatar: !$scope.index % 2 === 0 ? 'https://znews-photo-td.zadn.vn/w1024/Uploaded/kcwvouvs/2017_09_15/20106368_863767830449352_6829951550605727269_n.jpg' :
+                            avatar: $scope.index % 2 !== 0 ? 'https://znews-photo-td.zadn.vn/w1024/Uploaded/kcwvouvs/2017_09_15/20106368_863767830449352_6829951550605727269_n.jpg' :
                                 'https://d3ljug581seh18.cloudfront.net/assets/boys_home/boy_B-95ebb6cde3379af8ef602fbdd78bd4bb.jpg',
                             isMen: $scope.index % 2 === 0,
-                            isTess:true
+                            isTess: true
                         };
                     let p1 = firestore.collection('amuza/vn/user').doc('test_user_' + $scope.index).set({
                         ...user,
@@ -174,7 +196,10 @@ app.controller('myCtrl', function ($scope) {
                     let old = Math.floor(Math.random() * 37) + 18;
                     let p2 = firestore.collection('amuza/vn/connect').doc('test_user_' + $scope.index).set({
                         ...user,
-                        old: getOld(old)
+                        old: getOld(old),
+                        trueOld:old,
+                        speak:'Ế là phong cách sống của các con người tinh tế và các bậc vai vế, chỉ thích ngồi trên ghế, nhâm nhi cà phê, chơi đế chế hoặc nghịch dế.',
+                        timestamp:firebase.firestore.FieldValue.serverTimestamp()
                     });
                     promiseAll.push(p1);
                     promiseAll.push(p2);
@@ -206,11 +231,11 @@ app.controller('myCtrl', function ($scope) {
         }
     };
     $scope.mapGifFile = function (amount) {
-        for(let i =1;i<=amount;i++){
-            storage.ref('images/animation_gif/gif/img_'+i+'.gif').getDownloadURL().then(function(urlGif) {
-                storage.ref('images/animation_gif/png/img_'+i+'.png').getDownloadURL().then(function(urlPng) {
-                    console.log({gif:urlGif,png:urlPng});
-                    firestore.collection('gif_message').add({gif:urlGif,png:urlPng});
+        for (let i = 1; i <= amount; i++) {
+            storage.ref('images/animation_gif/gif/img_' + i + '.gif').getDownloadURL().then(function (urlGif) {
+                storage.ref('images/animation_gif/png/img_' + i + '.png').getDownloadURL().then(function (urlPng) {
+                    console.log({gif: urlGif, png: urlPng});
+                    firestore.collection('gif_message').add({gif: urlGif, png: urlPng});
                 });
             });
         }
@@ -229,5 +254,5 @@ function getOld(old) {
 
 
 function creatId(i) {
-    return parseInt(moment(new Date()).valueOf()+i).toString(36);
+    return parseInt(moment(new Date()).valueOf() + i).toString(36);
 }
